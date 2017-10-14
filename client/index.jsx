@@ -81,8 +81,6 @@ class App extends React.Component {
       long: long,
       lat: lat
     })
-
-    
   }
 
   sortMarkers(type){
