@@ -9,6 +9,9 @@
     "start": "node server/index.js",
     "postinstall": "webpack --config ./webpack.prod.config.js --progress"
   },
+  "engines": {
+    "node": "8.11.1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SpicyDonuts2017/EventFinder"
