@@ -8,30 +8,17 @@ window.eventTypes = {
   'Film': 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
   'Sports': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
   'Miscellaneous': 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
-  
+
 }
 
 var actions = {
   get: function(google, map, type, cb) {
     return $.ajax('/events')
     .then(data => {
-      if (type === null || type.toLowerCase() === 'all') {
-        return this._prepMarkers(data, cb, google, map)
-        .then(markers => {
-          return {events: data, markers: markers}
-        });
-      } else {
-        var info = [];
-        data.forEach(el => {
-          if (el.event.category === type){
-            info.push(el);
-          }
-        })
-        return this._prepMarkers(info, cb, google, map)
-          .then(markers => {
-          return {events: data, markers: markers}
-        });
-      }
+      return this._prepMarkers(data, cb, google, map)
+      .then(markers => {
+        return {events: data, markers: markers}
+      });
     })
   },
 
@@ -49,27 +36,25 @@ var actions = {
       }
     })
     .then(data => {
-      if (type === null || type === 'all') {
         return this.a._prepMarkers(data, cb, google, map)
         .then(markers => {
           return {events: data, markers: markers}
         });
-      } else {
-        var info = [];
-        data.forEach(el => {
-          if (el.event.category === type){
-            info.push(el);
-          }
-        })
-        return this.a._prepMarkers(info, cb, google, map)
-          .then(markers => {
-          return {events: data, markers: markers}
-        });
-      }
     })
     .fail((err) => {
       console.error(err);
     });
+  },
+
+  sort: (type, google, map, cb) => {
+    return $.ajax({
+      method: 'PATCH',
+      url: '/sort',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        type: type
+      })
+    })
   },
 
   _pinMarker: (lat, lng, event, google, map) => {
@@ -86,6 +71,7 @@ var actions = {
       return this.a.getCoordinate(event.venue.address, event.venue.postalCode)
       .then(({lat, lng}) => {
         var marker = this.a._pinMarker(lat, lng, event, google, map);
+        console.log(event)
         marker.addListener('click', () => {
           cb(data, marker.venueId);
         });

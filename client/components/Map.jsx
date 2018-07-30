@@ -26,8 +26,6 @@ class Map extends React.Component {
         disableDefaultUI: false,
         styles: mapStyles
       });
-      var currentLat = 37.791419;
-      var currentLng = -122.413293;
       var input = document.getElementById('search-input');
       var searchBox = new google.maps.places.SearchBox(input);
 
@@ -37,8 +35,6 @@ class Map extends React.Component {
         searchBox.setBounds(map.getBounds());
         var newLat = map.getBounds().getCenter().lat();
         var newLng = map.getBounds().getCenter().lng();
-        currentLat = newLat;
-        currentLng = newLng;
         var newLocation = { lat: newLat, lng: newLng };
         var service = new google.maps.places.PlacesService(map);
         service.nearbySearch({
@@ -46,7 +42,6 @@ class Map extends React.Component {
           radius: 500
         }, (places, service, pagination) => {
           this.search(places, google, map);
-          console.log(currentLat, currentLng)
         });
       });
 
@@ -54,9 +49,8 @@ class Map extends React.Component {
         this.search(searchBox.getPlaces(), google, map);
       });
 
-      var results = actions.get(google, map, null, this.props.displayEvents.bind(this))
+      var results = actions.get(google, map, this.props.displayEvents.bind(this))
       .then((results) => {
-        this.props.retreiveInfo(currentLat, currentLng)
         this.markers = results.markers;
         actions.addInfowindowClose(this.props.markers);
       });
@@ -77,15 +71,12 @@ class Map extends React.Component {
       }
     });
 
-    this.props.retreiveInfo(searchLat, searchLng)
-
     map.fitBounds(bounds);
     map.setCenter({lat: searchLat, lng: searchLng})
     map.setZoom(14);
 
-    actions.post(searchLat, searchLng, null, google, map, this.props.displayEvents.bind(this))
+    actions.post(searchLat, searchLng, google, map, this.props.displayEvents.bind(this))
     .then((results) => {
-      console.log('herro', results)
       this.markers = results.markers;
       actions.addInfowindowClose(this.markers);
     });
