@@ -10,7 +10,7 @@
     "postinstall": "webpack --config ./webpack.prod.config.js --progress"
   },
   "engines": {
-    "node": "8.11.1"
+    "node": "8.9.1"
   },
   "repository": {
     "type": "git",
