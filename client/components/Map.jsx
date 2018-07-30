@@ -49,7 +49,7 @@ class Map extends React.Component {
         this.search(searchBox.getPlaces(), google, map);
       });
 
-      var results = actions.get(google, map, this.props.displayEvents.bind(this))
+      var results = actions.get(google, map, null, this.props.displayEvents.bind(this))
       .then((results) => {
         this.markers = results.markers;
         actions.addInfowindowClose(this.props.markers);

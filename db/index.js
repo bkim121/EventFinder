@@ -103,7 +103,7 @@ const searchEvents = ({center_lat, center_lng, range}) => {
 
 const _addNewVenue = ({givenId, name, address, lat, lng, url, postalCode, image}) => {
   return connection.queryAsync(
-    `INSERT INTO venues (givenId, name, address, lat, lng, url, postalCode, image)
+    `INSERT IGNORE INTO venues (givenId, name, address, lat, lng, url, postalCode, image)
     VALUES ("${givenId}", "${name}", "${address}", ${lat}, ${lng}, "${url}", ${postalCode}, "${image}")`)
   .then((response) => {
     return givenId;
@@ -130,7 +130,7 @@ const searchOrCreateVenue = (venueObj) => {
 
 
 const addNewEvents = (eventObj) => {
-  return connection.queryAsync(`INSERT INTO events
+  return connection.queryAsync(`INSERT IGNORE INTO events
     (name, startDate, startTime, image, category, url, venueId, givenId) VALUES
     ("${eventObj.event.name}", "${eventObj.event.startDate}",
     "${eventObj.event.startTime}", "${eventObj.event.image}",

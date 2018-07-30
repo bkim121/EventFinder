@@ -84,13 +84,11 @@ class App extends React.Component {
   }
 
   sortMarkers(type){
-    console.log(type)
-    console.log(this.state.events)
     this.changeDisplay();
   }
 
 
-  
+
   addToMyVenues() {
     // if they are not logged in, give an error message
     if (!this.state.name) {
@@ -105,11 +103,11 @@ class App extends React.Component {
           userId: this.state.userId,
           givenId: this.state.venue.givenId,
           venueName: this.state.venue.name
-          // address: this.state.venue.address, 
+          // address: this.state.venue.address,
           // lat: this.state.venue.lat,
-          // lng: this.state.venue.lng, 
+          // lng: this.state.venue.lng,
           // url: this.state.venue.url,
-          // postalCode: this.state.venue.postalCode, 
+          // postalCode: this.state.venue.postalCode,
           // image: this.state.venue.image
         }),
         success: data => this.toggleDimmer()

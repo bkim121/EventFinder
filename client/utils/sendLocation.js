@@ -15,10 +15,39 @@ var actions = {
   get: function(google, map, type, cb) {
     return $.ajax('/events')
     .then(data => {
-      return this._prepMarkers(data, cb, google, map)
-      .then(markers => {
-        return {events: data, markers: markers}
-      });
+
+      // return this._prepMarkers(data, cb, google, map)
+      // .then(markers => {
+      //   return {events: data, markers: markers}
+      // });
+
+      var info = [];
+      data.forEach(el => {
+        el.forEach(inception => {
+          info.push(inception)
+        })
+      })
+      console.log(type)
+      if (type === null || type.toLowerCase() === 'all' || type === undefined) {
+        return this._prepMarkers(info, cb, google, map)
+        .then(markers => {
+          return {events: info, markers: markers}
+        });
+      } else {
+        var array = [];
+        info.forEach(el => {
+          if (el.event !== undefined) {
+            if (el.event.category === type){
+              array.push(el);
+            }
+          }
+        })
+        console.log(array)
+        return this._prepMarkers(array, cb, google, map)
+          .then(markers => {
+          return {events: array, markers: markers}
+        });
+      }
     })
   },
 
@@ -36,10 +65,25 @@ var actions = {
       }
     })
     .then(data => {
+      if (type === null || type === 'all' || type === undefined) {
         return this.a._prepMarkers(data, cb, google, map)
         .then(markers => {
           return {events: data, markers: markers}
         });
+      } else {
+        var info = [];
+        data.forEach(el => {
+          if (el.event !== undefined) {
+            if (el.event.category === type){
+              info.push(el);
+            }
+          }
+        })
+        return this.a._prepMarkers(info, cb, google, map)
+          .then(markers => {
+          return {events: data, markers: markers}
+        });
+      }
     })
     .fail((err) => {
       console.error(err);
@@ -67,6 +111,10 @@ var actions = {
   },
 
   _prepMarkers: (data, cb, google, map) => {
+    if (data.length === 2 && Array.isArray(data[0])) {
+      var badFormat = data.slice();
+      data = badFormat[0].concat(badFormat[1]);
+    }
     return Promise.all(data.map(event => {
       return this.a.getCoordinate(event.venue.address, event.venue.postalCode)
       .then(({lat, lng}) => {
@@ -109,7 +157,9 @@ var actions = {
       type: "GET",
       format: 'application/JSON'
     })
-    .then(data => data.results[0].geometry.location)
+    .then(data => {
+      return data.results[0].geometry.location
+    })
     .catch(err => {
       console.error(err);
     });

@@ -2,6 +2,7 @@ const Express = require('express');
 const Promise = require('bluebird');
 const bodyParser = require('body-parser');
 const ticketmaster = require('./ticketmaster.js');
+// const fb = require('./facebook.js');
 const db = require('../db/index.js');
 const cors = require('cors');
 
@@ -29,11 +30,15 @@ app.get('/events', (req, res) => {
    };
 
   db.searchEvents(options)
-    .then(events => {
-      if (events.length !== 0) {
-        throw events;
+    var promise1 = Promise.resolve(ticketmaster.getEvents(requestBody));
+    // var promise2 = Promise.resolve(fb.getFBEvents(requestBody));
+    // Promise.all([promise1, promise2])
+    Promise.all([promise1])
+    .then(allEvents => {
+      if (allEvents.length !== 0) {
+       throw allEvents;
       }
-      return ticketmaster.getEvents(requestBody)
+      return allEvents;
     })
     .then(apiEvents => {
       return Promise.all(apiEvents.map( event => {
@@ -72,12 +77,23 @@ app.post('/events', (req, res) => {
     range: range
   };
  db.searchEvents(options)
-   .then(events => {
-     if (events.length !== 0) {
-       throw events;
-     }
-     return ticketmaster.getEvents(params)
-   })
+   // .then(events => {
+   //   if (events.length !== 0) {
+   //     throw events;
+   //   }
+   //   return ticketmaster.getEvents(params)
+   // })
+    var promise1 = Promise.resolve(ticketmaster.getEvents(params));
+    // var promise2 = Promise.resolve(fb.getFBEvents(params));
+    // Promise.all([promise1, promise2])
+    Promise.all([promise1])
+    .then(allEvents => {
+      if (allEvents.length !== 0) {
+        throw allEvents;
+      }
+      console.log('are these they', allEvents[0].concat(allEvents[1]));
+      return allEvents[0].concat(allEvents[1]);
+    })
    .then(apiEvents => {
      return Promise.all(apiEvents.map( event => {
        return db.searchOrCreateVenue(event.venue)
